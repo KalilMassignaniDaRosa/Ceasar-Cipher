@@ -1,128 +1,87 @@
-using static CeasarCipher.Letters;
-
 namespace CeasarCipher
 {
     public class CeaserCipher
     {
-        public int code;
-
         public string Encrypt(int code, string phrase)
         {
-            List<int> numbers = LetterToNumber(phrase);
-            List<int> encryptedNumbers = new List<int>();
-
-            foreach (int number in numbers)
-            {
-                if (number != -1) 
-                {
-                    bool isUpperCase = char.IsUpper(phrase[encryptedNumbers.Count]); // Verifica se e maiuscula
-                    int encryptedNumber = AdjustNumberForWrapAround(number + code, isUpperCase);
-                    encryptedNumbers.Add(encryptedNumber);
-                }
-                else
-                {
-                    // Mantem caracteres nao alfabeticos
-                    encryptedNumbers.Add(-1);
-                }
-            }
-
-            // Converte numero para letra
-            string encryptedPhrase = "";
-            foreach (int num in encryptedNumbers)
-            {
-                if (num != -1)
-                {
-                    // Volta o numero para o caracter
-                    encryptedPhrase += (char)num;
-                }
-                else
-                {
-                    // Mantem caracteres nao alfabeticos
-                    encryptedPhrase += phrase[encryptedNumbers.IndexOf(num)];
-                }
-            }
-
-            return encryptedPhrase;
-        }
-
-        // Converte letra em numero (A = 0, ... , Z = 25)
-        public static int ConvertLetterToNumber(char c)
-        {
-            if (c >= 'A' && c <= 'Z')
-            {
-                // Tenta fazer o parse do caractere para o enum
-                if (Enum.TryParse<LetterEnum>(c.ToString(), out LetterEnum letter))
-                {
-                    return (int)letter; // Retorna o valor do enum
-                }
-            }
-            // Retorna -1 se nao for valido
-            return -1;
-        }
-
-        // Wrap Arround
-        public static int AdjustNumberForWrapAround(int number, bool isUpperCase)
-        {
-            int baseValue = isUpperCase ? 'A' : 'a';
-            return (number + 26) % 26 + baseValue; // Garante o wrap-around considerando A ou a
-        }
-
-        public static List<int> LetterToNumber(string phrase)
-        {
-            List<int> numbers = new List<int>();
+            List<char> encryptedPhrase = new();
 
             foreach (char c in phrase)
             {
-                if (c >= 'A' && c <= 'Z') // Maiusculas
+                // Caracteres com acentos sao mantidos
+                if (char.IsLetter(c) && (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'))
                 {
-                    numbers.Add(c - 'A');
-                }
-                else if (c >= 'a' && c <= 'z') // Minusculas
-                {
-                    numbers.Add(c - 'a');
+                    bool isUpperCase = char.IsUpper(c);
+                    char encryptedChar = _EncryptLetter(c, code, isUpperCase);
+                    // Adiciona a lista
+                    encryptedPhrase.Add(encryptedChar);
                 }
                 else
                 {
-                    numbers.Add(-1); // Ignora numeros e outros caracteres
+                    // Mantem o char
+                    encryptedPhrase.Add(c);
                 }
+                
             }
 
-            return numbers;
+            // Converte a lista em array
+            return new string(encryptedPhrase.ToArray());
         }
+
+        // Converte letra para numero e adiciona o codigo
+        private char _EncryptLetter(char c, int code, bool isUpperCase)
+        {
+            // Define o codigo ASCII
+            // 'A' a 'Z' = 65 a 90
+            // 'a' a 'z' = 97 a 122
+            // usa 'A' ou 'a' para referencia
+            int baseCode = isUpperCase ? 'A' : 'a';
+            //Console.WriteLine("---\nChar: "+ c);
+            //Console.WriteLine("Base Code: "+ baseCode);
+
+            int letterIndex = c -baseCode;
+            int newIndex = (letterIndex + code) %26;
+            //Console.WriteLine("New Index: "+ newIndex);
+            //Console.WriteLine("New Char code: "+ newIndex + baseCode);
+
+            return (char)(newIndex + baseCode);
+        }
+
+        private char _DecryptLetter(char c, int code, bool isUpperCase)
+        {
+            int baseCode = isUpperCase ? 'A' : 'a';
+            //Console.WriteLine("---\nChar: "+ c);
+            //Console.WriteLine("Base Code: "+ baseCode);
+
+            int letterIndex = c -baseCode;
+            // +26 para garantir que o indice nao fique negativo
+            int newIndex = (letterIndex - code + 26) % 26;
+            //Console.WriteLine("New Index: "+ newIndex);
+            //Console.WriteLine("New Char code: "+ newIndex + baseCode);
+
+            return (char)(newIndex + baseCode);
+        }
+
 
         public string Decrypt(int code, string phrase)
         {
-            List<int> numbers = LetterToNumber(phrase);
-            List<int> decryptedNumbers = new List<int>();
+            List<char> decryptedPhrase = new();
 
-            foreach (int number in numbers)
+            foreach (char c in phrase)
             {
-                if (number != -1)
+                if (char.IsLetter(c) && (c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z'))
                 {
-                    bool isUpperCase = char.IsUpper(phrase[decryptedNumbers.Count]); 
-                    int decryptedNumber = AdjustNumberForWrapAround(number - code, isUpperCase);
-                    decryptedNumbers.Add(decryptedNumber);
+                    bool isUpperCase = char.IsUpper(c);
+                    char decryptedChar = _DecryptLetter(c, code, isUpperCase);
+                    decryptedPhrase.Add(decryptedChar);
                 }
                 else
                 {
-                    decryptedNumbers.Add(-1); 
+                    decryptedPhrase.Add(c);
                 }
             }
 
-            string decryptedPhrase = "";
-            foreach (int num in decryptedNumbers)
-            {
-                if (num != -1)
-                {
-                    decryptedPhrase += (char)num; 
-                }
-                else
-                {
-                    decryptedPhrase += phrase[decryptedNumbers.IndexOf(num)];
-                }
-            }
-
-            return decryptedPhrase;
+            return new string(decryptedPhrase.ToArray());
         }
     }
 }

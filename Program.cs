@@ -30,17 +30,7 @@ do
         Console.WriteLine("Insert a phrase: ");
         phrase = Console.ReadLine()!;
 
-        if (string.IsNullOrWhiteSpace(phrase))
-        {
-            Console.WriteLine("The phrase cannot be null or empty. Please enter a valid phrase.");
-        }
-        else if (phrase.Any(c => !char.IsLetter(c) && c != ' '))
-        {
-            Console.WriteLine("The phrase can only contain letters (including accented letters and letters from other alphabets) and spaces. Please enter a valid phrase.");
-            phrase = null!;
-        }
-
-    } while (string.IsNullOrWhiteSpace(phrase) || phrase.Any(c => !char.IsLetter(c) && c != ' '));
+    } while (string.IsNullOrWhiteSpace(phrase));
 
     Console.WriteLine("Insert a number: ");
     while (!int.TryParse(Console.ReadLine(), out num) || num <= 0)

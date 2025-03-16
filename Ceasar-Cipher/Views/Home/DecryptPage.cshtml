@@ -1,0 +1,29 @@
+﻿@page
+@model Ceasar_Cipher.Views.Home.DecryptPageModel
+
+<h2>Decrypt Phrase</h2>
+
+<form method="post" action="@Url.Action("Decrypt", "Home")">
+    <div>
+        <label for="phrase">Phrase:</label>
+        <input type="text" id="phrase" name="phrase" required />
+    </div>
+    <div>
+        <label for="code">Code:</label>
+        <input type="number" id="code" name="code" required min="0" max="25" />
+    </div>
+    <button type="submit">Decrypt Phrase</button>
+</form>
+
+@if (ViewBag.DecryptedText != null)
+{
+    <div class="encrypted-text-container">
+        <h3 class="encrypted-text-title">Decrypted Text:</h3>
+        <p class="encrypted-text">@ViewBag.DecryptedText</p>
+    </div>
+}
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red;">@ViewBag.Error</p>
+}

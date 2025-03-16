@@ -1,0 +1,30 @@
+﻿@page
+@model Ceasar_Cipher.Views.Home.CModel
+
+<h2>Encrypt Phrase</h2>
+
+<form method="post" action="@Url.Action("Encrypt", "Home")">
+    <div>
+        <label for="phrase">Phrase:</label>
+        <input type="text" id="phrase" name="phrase" required />
+    </div>
+    <div>
+        <label for="code">Code:</label>
+        <input type="number" id="code" name="code" required min="0" max="25" />
+    </div>
+    <button type="submit">Encrypt Phrase</button>
+</form>
+
+<!-- View bag e um objeto dinamico para passar dados do controller para a View -->
+@if (ViewBag.EncryptedText != null)
+{
+    <div class="encrypted-text-container">
+        <h3 class="encrypted-text-title">Encrypted Text:</h3>
+        <p class="encrypted-text">@ViewBag.EncryptedText</p>
+    </div>
+}
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red;">@ViewBag.Error</p>
+}
